@@ -12,13 +12,14 @@ categories = ["rust-patterns", "embedded", "no-std", "no-std::no-alloc"]
 keywords = ["linkage", "trait", "cast", "any"]
 
 [dependencies]
-linkme = "0.3"
+linkme = { version = "0.3", optional = true }
 heapless = "0.8" # not(feature = "std")
 gensym = "0.1"
-once_cell = { version = "1.19", default-features = false, features = ["critical-section"] }
+once_cell = { version = "1.19", default-features = false, features = ["critical-section"], optional = true }
 
 [features]
-std = ["alloc", "once_cell/std"]
-used_linker = ["linkme/used_linker"]
+std = ["alloc", "once_cell/std", "global_registry"]
+global_registry = ["dep:linkme", "dep:once_cell"]
+used_linker = ["linkme?/used_linker"]
 alloc = []
 default = ["std"]
