@@ -21,7 +21,7 @@ use std::{rc::Rc, sync::Arc};
 
 #[cfg(feature = "global_registry")]
 mod global;
-
+#[cfg(feature = "global_registry")]
 pub use global::*;
 
 // Re-exports for `register!()` macro
