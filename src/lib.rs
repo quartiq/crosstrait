@@ -38,7 +38,7 @@ pub use gensym::gensym;
 /// and the registry would be a double map of `{type_id: {trait_id: vtable_addr}}`.
 #[doc(hidden)]
 #[allow(clippy::type_complexity)]
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Caster<T: ?Sized> {
     pub ref_: fn(&dyn Any) -> Option<&T>,
     pub mut_: fn(&mut dyn Any) -> Option<&mut T>,
