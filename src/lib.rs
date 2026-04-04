@@ -15,9 +15,7 @@ use core::any::{Any, TypeId};
 #[cfg(feature = "alloc")]
 extern crate alloc;
 #[cfg(feature = "alloc")]
-use alloc::boxed::Box;
-#[cfg(feature = "std")]
-use std::{rc::Rc, sync::Arc};
+use alloc::{boxed::Box, rc::Rc, sync::Arc};
 
 #[cfg(feature = "global_registry")]
 mod global;
@@ -44,9 +42,9 @@ pub struct Caster<T: ?Sized> {
     pub mut_: fn(&mut dyn Any) -> Option<&mut T>,
     #[cfg(feature = "alloc")]
     pub box_: fn(Box<dyn Any>) -> Result<Box<T>, Box<dyn Any>>,
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     pub rc: fn(Rc<dyn Any>) -> Result<Rc<T>, Rc<dyn Any>>,
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     pub arc: fn(Arc<dyn Any + Sync + Send>) -> Result<Arc<T>, Arc<dyn Any + Sync + Send>>,
 }
 
@@ -83,21 +81,9 @@ macro_rules! caster {
         }
     };
 }
+
 /// Build a `Caster` for a given concrete type and target trait
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-#[macro_export]
-#[doc(hidden)]
-macro_rules! caster {
-    ( $ty:ty => $tr:ty $(, $flag:ident)? ) => {
-        $crate::Caster::<$tr> {
-            ref_: |any| any.downcast_ref::<$ty>().map(|t| t as _),
-            mut_: |any| any.downcast_mut::<$ty>().map(|t| t as _),
-            box_: |any| any.downcast::<$ty>().map(|t| t as _),
-        }
-    };
-}
-/// Build a `Caster` for a given concrete type and target trait
-#[cfg(feature = "std")]
+#[cfg(any(feature = "alloc", feature = "std"))]
 #[macro_export]
 #[doc(hidden)]
 macro_rules! caster {
@@ -182,7 +168,7 @@ impl<'a> Registry<'a> {
     }
 
     /// Cast to a ref counted trait object
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     pub fn cast_rc<T: ?Sized + 'static>(&self, any: Rc<dyn Any>) -> Result<Rc<T>, Rc<dyn Any>> {
         match self.caster((*any).type_id()) {
             Some(c) => (c.rc)(any),
@@ -191,7 +177,7 @@ impl<'a> Registry<'a> {
     }
 
     /// Cast to an atomically ref counted trait object
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     pub fn cast_arc<T: ?Sized + 'static>(
         &self,
         any: Arc<dyn Any + Sync + Send>,
