@@ -3,9 +3,7 @@ use core::any::Any;
 #[cfg(feature = "alloc")]
 extern crate alloc;
 #[cfg(feature = "alloc")]
-use alloc::boxed::Box;
-#[cfg(feature = "std")]
-use std::{rc::Rc, sync::Arc};
+use alloc::{boxed::Box, rc::Rc, sync::Arc};
 
 use once_cell::sync::Lazy;
 
@@ -89,14 +87,14 @@ impl<T: ?Sized + 'static> Cast<Box<T>> for Box<dyn Any> {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 impl<T: ?Sized + 'static> Cast<Rc<T>> for Rc<dyn Any> {
     fn cast(self) -> Option<Rc<T>> {
         REGISTRY.cast_rc(self).ok()
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 impl<T: ?Sized + 'static> Cast<Arc<T>> for Arc<dyn Any + Sync + Send> {
     fn cast(self) -> Option<Arc<T>> {
         REGISTRY.cast_arc(self).ok()
