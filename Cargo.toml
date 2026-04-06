@@ -1,6 +1,6 @@
 [package]
 name = "crosstrait"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = ["Robert Jördens <rj@quartiq.de>"]
 license = "MIT OR Apache-2.0"
